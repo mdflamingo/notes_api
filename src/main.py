@@ -13,7 +13,7 @@ from async_fastapi_jwt_auth import AuthJWT
 from async_fastapi_jwt_auth.exceptions import AuthJWTException
 
 from core.config import settings
-from api.v1 import notes_api
+from api.v1 import notes_api, authentication
 
 
 def swagger_monkey_patch(*args, **kwargs):
@@ -28,6 +28,9 @@ applications.get_swagger_ui_html = swagger_monkey_patch
 
 @asynccontextmanager
 async def lifespan(fast_api: FastAPI):
+    from models.user import User
+    from models.note import Note
+    from models.tag import Tag
     await create_database()
     yield
 
@@ -35,6 +38,7 @@ app = FastAPI(
     title='Note service',
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
+    description='Сервис по управлению личными заметками',
     default_response_class=ORJSONResponse,
     lifespan=lifespan
 )
@@ -47,10 +51,11 @@ def get_config():
 
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exc: AuthJWTException):
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
+    return JSONResponse(status_code=exc.status_code, content={'detail': exc.message})
 
 
 app.include_router(notes_api.router, prefix='/api/v1/notes', tags=['notes'])
+app.include_router(authentication.router, prefix='/auth/', tags=['auth'])
 
 
 if __name__ == '__main__':
