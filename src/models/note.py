@@ -12,6 +12,7 @@ class Note(Base):
     __table_args = {'extend_existing': True}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    user_id = Column(UUID, ForeignKey('users.id', ondelete='CASCADE'), index=True)
     title = Column(String(255), nullable=False)
     text = Column(Text, nullable=True)
     tags = relationship('Tag', secondary='tag_notes', back_populates='notes')
