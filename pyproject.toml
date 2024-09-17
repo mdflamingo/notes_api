@@ -15,6 +15,9 @@ async-fastapi-jwt-auth = "^0.6.6"
 werkzeug = "^3.0.4"
 asyncpg = "^0.29.0"
 greenlet = "^3.1.0"
+redis = "^5.0.8"
+status = "^0.2.5"
+orjson = "^3.10.7"
 
 
 [build-system]

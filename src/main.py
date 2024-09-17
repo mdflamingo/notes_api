@@ -7,6 +7,7 @@ from fastapi import applications, FastAPI, Request
 from fastapi.responses import ORJSONResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 
+from db import cache
 from db.postgres import create_database, purge_database
 from fastapi.responses import JSONResponse
 from async_fastapi_jwt_auth import AuthJWT
@@ -14,6 +15,7 @@ from async_fastapi_jwt_auth.exceptions import AuthJWTException
 
 from core.config import settings
 from api.v1 import notes_api, authentication
+from db.redis import RedisAsyncCache
 
 
 def swagger_monkey_patch(*args, **kwargs):
@@ -31,6 +33,8 @@ async def lifespan(fast_api: FastAPI):
     from models.user import User
     from models.note import Note
     from models.tag import Tag
+
+    cache.async_cache = RedisAsyncCache()
     await create_database()
     yield
 
@@ -55,7 +59,7 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
 
 
 app.include_router(notes_api.router, prefix='/api/v1/notes', tags=['notes'])
-app.include_router(authentication.router, prefix='/auth/', tags=['auth'])
+app.include_router(authentication.router, prefix='/auth', tags=['auth'])
 
 
 if __name__ == '__main__':

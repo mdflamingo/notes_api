@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     postgres_user: str = Field('postgres', alias='POSTGRES_USER')
     postgres_password: str = Field('123qwe', alias='POSTGRES_PASSWORD')
 
+    redis_host: str = Field('redis', alias='REDIS_HOST')
+    redis_port: int = Field(6379, alias='REDIS_PORT')
+
+    authjwt_secret_key: str = Field('secret', alias='AUTH_JWT_SECRET_KEY')
+
     logs_dir: str = Field('logs', alias='LOGS_DIR')
     logs_file_name: str = Field('logs/fastapi.json', alias='LOGS_FILE_NAME')
     logs_mode: str = Field('a', alias='LOGS_MODE')

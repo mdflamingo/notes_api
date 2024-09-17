@@ -2,6 +2,7 @@ version: '3.9'
 
 volumes:
   pg_data:
+  redis_data:
 
 services:
   postgres:
@@ -12,4 +13,13 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
     restart: always
