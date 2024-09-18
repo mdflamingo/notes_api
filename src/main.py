@@ -1,12 +1,15 @@
+import jwt
 import logging
 from contextlib import asynccontextmanager
+from http import HTTPStatus
 
 import uvicorn
-from fastapi import applications, FastAPI, Request
+from fastapi import applications, FastAPI, Request, Response
 
 from fastapi.responses import ORJSONResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 
+from core.logger import setup_root_logger
 from db import cache
 from db.postgres import create_database, purge_database
 from fastapi.responses import JSONResponse
@@ -16,6 +19,7 @@ from async_fastapi_jwt_auth.exceptions import AuthJWTException
 from core.config import settings
 from api.v1 import notes_api, authentication
 from db.redis import RedisAsyncCache
+from utils.rate_limit import rate_limit
 
 
 def swagger_monkey_patch(*args, **kwargs):
@@ -48,6 +52,20 @@ app = FastAPI(
 )
 
 
+@app.middleware('http')
+async def rate_limit_middleware(request: Request, call_next):
+    authorization = request.headers.get('authorization')
+    if not authorization:
+        return await call_next(request)
+
+    access_token = request.headers.get('authorization').split()[1]
+    decoded_token = jwt.decode(access_token, options={'verify_signature': False})
+    user_id = decoded_token.get('sub')
+    if not rate_limit(user_id, settings.request_limit_per_minute):
+        return Response(status_code=HTTPStatus.TOO_MANY_REQUESTS, content='Too Many Requests')
+    return await call_next(request)
+
+
 @AuthJWT.load_config
 def get_config():
     return settings
@@ -60,6 +78,11 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
 
 app.include_router(notes_api.router, prefix='/api/v1/notes', tags=['notes'])
 app.include_router(authentication.router, prefix='/auth', tags=['auth'])
+
+setup_root_logger()
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.info('Starting App')
 
 
 if __name__ == '__main__':
