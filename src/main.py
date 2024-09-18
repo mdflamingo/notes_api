@@ -77,7 +77,7 @@ def authjwt_exception_handler(request: Request, exc: AuthJWTException):
 
 
 app.include_router(notes_api.router, prefix='/api/v1/notes', tags=['notes'])
-app.include_router(authentication.router, prefix='/auth', tags=['auth'])
+app.include_router(authentication.router, prefix='/api/v1/auth', tags=['auth'])
 
 setup_root_logger()
 

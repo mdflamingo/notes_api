@@ -32,7 +32,7 @@ async def get_note_by_id(note_id: UUID,
                          authorize: AuthJWT = Depends(auth_dep),
                          note_service: NoteService = Depends(get_note_service)):
 
-    # await authorize.jwt_required()
+    await authorize.jwt_required()
     note = await note_service.get_note(note_id)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')
@@ -46,7 +46,7 @@ async def create_note(note_create: NoteCreate,
                       authorize: AuthJWT = Depends(auth_dep),
                       note_service: NoteService = Depends(get_note_service)):
 
-    # await authorize.jwt_required()
+    await authorize.jwt_required()
     note = await note_service.create_note(note_create)
 
     return note
@@ -60,7 +60,7 @@ async def update_note(note_id: UUID, note_update: NoteUpdate,
                       authorize: AuthJWT = Depends(auth_dep),
                       note_service: NoteService = Depends(get_note_service)):
 
-    # await authorize.jwt_required()
+    await authorize.jwt_required()
     note = await note_service.update_note(note_id, note_update)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')
@@ -75,7 +75,7 @@ async def update_note(note_id: UUID,
                       authorize: AuthJWT = Depends(auth_dep),
                       note_service: NoteService = Depends(get_note_service)):
 
-    # await authorize.jwt_required()
+    await authorize.jwt_required()
     note = await note_service.delete_note(note_id)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')

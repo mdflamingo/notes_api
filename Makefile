@@ -1,10 +1,10 @@
 D = docker
 DC = docker compose
-PROJECT = deploy/logs.yaml
+PROJECT = deploy/project.yaml
 STORAGE_FILE = deploy/storage.yaml
 
 .PHONY: project
-project-build:
+project:
 	${DC} -f ${PROJECT} up --build -d
 
 .PHONY: stop-project
