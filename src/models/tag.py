@@ -1,13 +1,9 @@
 import uuid
 
-from sqlalchemy import UUID, Column, String
+from sqlalchemy import UUID, Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from db.postgres import Base
-
-
-class Permission:
-    pass
 
 
 class Tag(Base):
@@ -16,8 +12,10 @@ class Tag(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255), unique=True, nullable=False)
+    note_id = Column('note_id', ForeignKey('note.id', ondelete='CASCADE'), index=True)
+    notes = relationship('Note', secondary='note_tags', back_populates='tags', lazy='selectin')
 
-    def __int__(self, name: str, description: str):
+    def __int__(self, name: str):
         self.name = name
 
     def __repr__(self) -> str:

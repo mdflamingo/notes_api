@@ -1,4 +1,5 @@
 from functools import lru_cache
+from select import select
 from uuid import UUID
 
 from fastapi import Depends
@@ -7,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.postgres import get_session
 from models.note import Note
-from repositiries.base_repository import SQLAlchemyRepository, AbstractStorage
+from repositories.base_repository import SQLAlchemyRepository, AbstractStorage
 
 
 class NoteRepository(SQLAlchemyRepository):
@@ -28,6 +29,13 @@ class NoteRepository(SQLAlchemyRepository):
         stmt = delete(self.model).where(self.model.id == obj_id)
         await self.session.execute(stmt)
         await self.session.commit()
+
+    # async def find_all(self) -> list:
+    #     stmt = select(self.model)
+    #     response = await self.session.execute(stmt)
+    #     objects = [obj[0].tags for obj in response]
+    #
+    #     return objects
 
 
 @lru_cache()

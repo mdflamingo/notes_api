@@ -18,7 +18,6 @@ class User(Base):
     first_name = Column(String(50))
     last_name = Column(String(50))
     created_at = Column(DateTime, default=datetime.utcnow)
-    roles = relationship('Role', secondary='user_roles', back_populates='users', lazy='selectin')
 
     def __init__(self, login: str, password: str, first_name: str, last_name: str) -> None:
         self.login = login

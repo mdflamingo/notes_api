@@ -5,8 +5,8 @@ from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 
 from models.note import Note
-from repositiries.base_repository import AbstractStorage
-from repositiries.note_repository import get_note_repository
+from repositories.base_repository import AbstractStorage
+from repositories.note_repository import get_note_repository
 from schemas.note_schema import NoteCreate, NoteUpdate
 
 
@@ -28,8 +28,9 @@ class NoteService:
 
     async def get_notes(self):
         notes = await self.db.find_all()
+        test = [note.tags for note in notes]
 
-        return notes
+        return notes, test
 
     async def update_note(self, note_id: UUID, note_fields: NoteUpdate):
         note_in_db = await self.get_note(note_id=note_id)

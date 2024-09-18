@@ -15,9 +15,10 @@ class Note(Base):
     user_id = Column(UUID, ForeignKey('users.id', ondelete='CASCADE'), index=True)
     title = Column(String(255), nullable=False)
     text = Column(Text, nullable=True)
-    tags = relationship('Tag', secondary='tag_notes', back_populates='notes')
     created_date = Column(DateTime, default=datetime.utcnow)
     updated_date = Column(DateTime, default=datetime.utcnow)
+    tags = relationship('Tag', secondary='note_tags',
+                        back_populates='notes', lazy='selectin')
 
     def __int__(self, title: str):
         self.title = title

@@ -10,14 +10,16 @@ from fastapi.encoders import jsonable_encoder
 from db.base_cache import AsyncCache
 from db.cache import get_async_cache
 from models.user import User
-from repositiries.base_repository import AbstractStorage
-from repositiries.user_repository import get_user_repository
+from repositories.base_repository import AbstractStorage
+from repositories.user_repository import get_user_repository
 from schemas.user_schema import UserCreate, UserLogin
 
 
 class UserService:
-    def __init__(self, db: AbstractStorage):
+    def __init__(self, db: AbstractStorage,
+                 cache: AsyncCache,):
         self.db = db
+        self.cache = cache
 
     async def create_user(self, user_create: UserCreate) -> User:
 
@@ -43,13 +45,16 @@ class UserService:
         ttl = access_token['exp'] - access_token['iat']
         key = access_token.get('jti')
 
+        await self.cache.put(key=key, ttl=ttl, value=True)
+
         return 'The exit was completed successfully!'
 
 
 @lru_cache()
 def get_user_service(
-        db: AbstractStorage = Depends(get_user_repository)
+        db: AbstractStorage = Depends(get_user_repository),
+        cache: AsyncCache = Depends(get_async_cache)
 ) -> UserService:
-    return UserService(db)
+    return UserService(db, cache)
 
 

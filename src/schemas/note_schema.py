@@ -2,10 +2,18 @@ from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
 
+class TagInDB(BaseModel):
+    id: UUID
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class NoteInDB(BaseModel):
     id: UUID
     title: str
-    tags: list
+    text: str
+    tags: list[TagInDB]
 
     model_config = ConfigDict(from_attributes=True)
 
