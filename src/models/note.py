@@ -13,6 +13,7 @@ class Note(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     user_id = Column(UUID, ForeignKey('users.id', ondelete='CASCADE'), index=True)
+    user = relationship('User', backref='user_notes')
     title = Column(String(255), nullable=False)
     text = Column(Text, nullable=True)
     created_date = Column(DateTime, default=datetime.utcnow)

@@ -18,7 +18,7 @@ router = APIRouter()
 async def get_notes(authorize: AuthJWT = Depends(auth_dep),
                     note_service: NoteService = Depends(get_note_service)):
 
-    # await authorize.jwt_required()
+    await authorize.jwt_required()
     note = await note_service.get_notes()
 
     return note
@@ -71,7 +71,7 @@ async def update_note(note_id: UUID, note_update: NoteUpdate,
 @router.delete('/{note_id}',
                description='Удалить заметку',
                status_code=status.HTTP_200_OK)
-async def update_note(note_id: UUID,
+async def delete_note(note_id: UUID,
                       authorize: AuthJWT = Depends(auth_dep),
                       note_service: NoteService = Depends(get_note_service)):
 

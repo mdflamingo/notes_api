@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     authjwt_secret_key: str = Field('secret', alias='AUTH_JWT_SECRET_KEY')
 
+    request_limit_per_minute: int = Field(5, alias='LIMIT')
+
     logs_dir: str = Field('logs', alias='LOGS_DIR')
     logs_file_name: str = Field('logs/fastapi.json', alias='LOGS_FILE_NAME')
     logs_mode: str = Field('a', alias='LOGS_MODE')
