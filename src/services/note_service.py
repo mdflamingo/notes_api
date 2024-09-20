@@ -1,21 +1,28 @@
+import logging
 from functools import lru_cache
+from http import HTTPStatus
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from models.note import Note
+from models.tag import Tag
+from models.user import User
 from repositories.base_repository import AbstractStorage
 from repositories.note_repository import get_note_repository
 from schemas.note_schema import NoteCreate, NoteUpdate
+from services.tag_service import TagService, get_tag_service
 
 
 class NoteService:
-    def __init__(self, db: AbstractStorage):
+    def __init__(self, db: AbstractStorage, tag_service: TagService):
         self.db = db
+        self.tag_service = tag_service
 
-    async def create_note(self, note: NoteCreate):
-        note_dict = jsonable_encoder(note)
+    async def create_note(self, note: NoteCreate, user_id: str):
+        tags = [Tag(name=tag.name) for tag in note.tags]
+        note_dict = {'user_id': user_id, 'title': note.title, 'text': note.text, 'tags': tags}
         note = await self.db.add_one(data=note_dict)
 
         return note
@@ -28,9 +35,7 @@ class NoteService:
 
     async def get_notes(self):
         notes = await self.db.find_all()
-        test = [note.tags for note in notes]
-
-        return notes, test
+        return notes
 
     async def update_note(self, note_id: UUID, note_fields: NoteUpdate):
         note_in_db = await self.get_note(note_id=note_id)
@@ -54,6 +59,7 @@ class NoteService:
 
 @lru_cache()
 def get_note_service(
-        db: AbstractStorage = Depends(get_note_repository)
+        db: AbstractStorage = Depends(get_note_repository),
+        tag_service: TagService = Depends(get_tag_service)
 ) -> NoteService:
-    return NoteService(db)
+    return NoteService(db, tag_service)

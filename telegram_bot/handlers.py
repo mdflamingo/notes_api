@@ -6,7 +6,11 @@ from aiogram.filters import Command
 router = Router()
 
 
-@router.message(Command("start"))
+url_note = '/api/v1/notes/'
+url_auth = '/api/v1/auth/'
+
+
+@router.message(Command('start'))
 async def start_handler(msg: Message):
     await msg.answer("Привет! Вот что я могу: "
                      "4. Создать заметку "

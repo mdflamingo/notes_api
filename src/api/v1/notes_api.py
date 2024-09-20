@@ -13,7 +13,6 @@ router = APIRouter()
 
 @router.get('/',
             description='Получить список всех заметок',
-            response_model=list[NoteInDB],
             status_code=status.HTTP_200_OK)
 async def get_notes(authorize: AuthJWT = Depends(auth_dep),
                     note_service: NoteService = Depends(get_note_service)):
@@ -26,7 +25,6 @@ async def get_notes(authorize: AuthJWT = Depends(auth_dep),
 
 @router.get('/{note_id}',
             description='Получение информации об одной заметке',
-            response_model=NoteInDB,
             status_code=status.HTTP_200_OK)
 async def get_note_by_id(note_id: UUID,
                          authorize: AuthJWT = Depends(auth_dep),
@@ -41,13 +39,15 @@ async def get_note_by_id(note_id: UUID,
 
 @router.post('/',
              description='Создать заметку',
+             response_model=NoteInDB,
              status_code=status.HTTP_201_CREATED)
 async def create_note(note_create: NoteCreate,
                       authorize: AuthJWT = Depends(auth_dep),
                       note_service: NoteService = Depends(get_note_service)):
 
     await authorize.jwt_required()
-    note = await note_service.create_note(note_create)
+    user_id = await authorize.get_jwt_subject()
+    note = await note_service.create_note(note_create, user_id)
 
     return note
 
@@ -75,7 +75,7 @@ async def delete_note(note_id: UUID,
                       authorize: AuthJWT = Depends(auth_dep),
                       note_service: NoteService = Depends(get_note_service)):
 
-    await authorize.jwt_required()
+    # await authorize.jwt_required()
     note = await note_service.delete_note(note_id)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')

@@ -9,6 +9,12 @@ class TagInDB(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class TagCreate(BaseModel):
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class NoteInDB(BaseModel):
     id: UUID
     title: str
@@ -21,6 +27,7 @@ class NoteInDB(BaseModel):
 class NoteCreate(BaseModel):
     title: str = Field(min_length=4, max_length=26)
     text: str
+    tags: list[TagCreate]
 
 
 class NoteUpdate(BaseModel):

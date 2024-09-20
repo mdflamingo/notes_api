@@ -30,13 +30,6 @@ class NoteRepository(SQLAlchemyRepository):
         await self.session.execute(stmt)
         await self.session.commit()
 
-    # async def find_all(self) -> list:
-    #     stmt = select(self.model)
-    #     response = await self.session.execute(stmt)
-    #     objects = [obj[0].tags for obj in response]
-    #
-    #     return objects
-
 
 @lru_cache()
 def get_note_repository(

@@ -19,7 +19,7 @@ class Note(Base):
     created_date = Column(DateTime, default=datetime.utcnow)
     updated_date = Column(DateTime, default=datetime.utcnow)
     tags = relationship('Tag', secondary='note_tags',
-                        back_populates='notes', lazy='selectin')
+                        back_populates='notes', lazy='selectin', cascade='all, delete')
 
     def __int__(self, title: str):
         self.title = title
@@ -32,5 +32,5 @@ class NoteTag(Base):
     __tablename__ = 'note_tags'
     __table_args = {'extend_existing': True}
 
-    note_id = Column('note_id', ForeignKey('notes.id'), primary_key=True)
-    tag_id = Column('tag_id', ForeignKey('tags.id'), primary_key=True)
+    note_id = Column('note_id', ForeignKey('notes.id', ondelete='CASCADE'), primary_key=True)
+    tag_id = Column('tag_id', ForeignKey('tags.id', ondelete='CASCADE'), primary_key=True)
