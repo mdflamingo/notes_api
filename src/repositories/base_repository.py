@@ -48,8 +48,8 @@ class SQLAlchemyRepository(AbstractStorage):
 
         return obj
 
-    async def find_all(self) -> list:
-        stmt = select(self.model)
+    async def find_all(self, filter_condition) -> list:
+        stmt = select(self.model).filter(filter_condition)
         response = await self.session.execute(stmt)
         objects = [obj[0] for obj in response]
 

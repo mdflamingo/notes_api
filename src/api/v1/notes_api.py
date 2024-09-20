@@ -5,7 +5,7 @@ from async_fastapi_jwt_auth import AuthJWT
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.v1.authentication import auth_dep
-from schemas.note_schema import NoteCreate, NoteUpdate, NoteInDB, TagInDB
+from schemas.note_schema import NoteCreate, NoteUpdate, NoteInDB
 from services.note_service import NoteService, get_note_service
 
 router = APIRouter()
@@ -18,7 +18,8 @@ async def get_notes(authorize: AuthJWT = Depends(auth_dep),
                     note_service: NoteService = Depends(get_note_service)):
 
     await authorize.jwt_required()
-    note = await note_service.get_notes()
+    user_id = await authorize.get_jwt_subject()
+    note = await note_service.get_notes(user_id)
 
     return note
 
@@ -31,7 +32,8 @@ async def get_note_by_id(note_id: UUID,
                          note_service: NoteService = Depends(get_note_service)):
 
     await authorize.jwt_required()
-    note = await note_service.get_note(note_id)
+    user_id = await authorize.get_jwt_subject()
+    note = await note_service.get_note(note_id, user_id)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')
     return note
@@ -61,7 +63,8 @@ async def update_note(note_id: UUID, note_update: NoteUpdate,
                       note_service: NoteService = Depends(get_note_service)):
 
     await authorize.jwt_required()
-    note = await note_service.update_note(note_id, note_update)
+    user_id = await authorize.get_jwt_subject()
+    note = await note_service.update_note(note_id, note_update, user_id)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')
 
@@ -76,7 +79,8 @@ async def delete_note(note_id: UUID,
                       note_service: NoteService = Depends(get_note_service)):
 
     await authorize.jwt_required()
-    note = await note_service.delete_note(note_id)
+    user_id = await authorize.get_jwt_subject()
+    note = await note_service.delete_note(note_id, user_id)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')
 
