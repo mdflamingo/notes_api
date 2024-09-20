@@ -11,7 +11,7 @@ class Tag(Base):
     __table_args = {'extend_existing': True}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    name = Column(String(255), unique=False, nullable=False)
+    name = Column(String(255), unique=True, nullable=False)
     notes = relationship('Note', secondary='note_tags',
                          back_populates='tags', lazy='selectin')
 

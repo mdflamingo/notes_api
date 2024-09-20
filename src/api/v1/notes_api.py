@@ -75,7 +75,7 @@ async def delete_note(note_id: UUID,
                       authorize: AuthJWT = Depends(auth_dep),
                       note_service: NoteService = Depends(get_note_service)):
 
-    # await authorize.jwt_required()
+    await authorize.jwt_required()
     note = await note_service.delete_note(note_id)
     if not note:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='Note not found')

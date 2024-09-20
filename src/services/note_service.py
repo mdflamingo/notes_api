@@ -21,7 +21,15 @@ class NoteService:
         self.tag_service = tag_service
 
     async def create_note(self, note: NoteCreate, user_id: str):
-        tags = [Tag(name=tag.name) for tag in note.tags]
+        # tags = [Tag(name=tag.name) for tag in note.tags]
+        tags = []
+        for tag in note.tags:
+            tag_db = await self.tag_service.get_tag(tag_name=tag.name)
+            if tag_db:
+                tags.append(tag_db)
+            else:
+                tags.append(Tag(name=tag.name))
+
         note_dict = {'user_id': user_id, 'title': note.title, 'text': note.text, 'tags': tags}
         note = await self.db.add_one(data=note_dict)
 
