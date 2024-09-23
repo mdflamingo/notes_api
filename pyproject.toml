@@ -19,6 +19,7 @@ redis = "^5.0.8"
 status = "^0.2.5"
 orjson = "^3.10.7"
 aiogram = "^3.13.0"
+python-dotenv = "^1.0.1"
 
 
 [build-system]

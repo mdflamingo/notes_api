@@ -1,1 +1,9 @@
-BOT_TOKEN='6783415747:AAHZ1bWfgtwnD0-iU3S5JZWVA9qm91so8HI'
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BOT_TOKEN = os.getenv('BOT_TOKEN', 'some_token')
+PG_LINK = os.getenv('PG_LINK', 'some')
+
+
