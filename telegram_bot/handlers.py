@@ -1,15 +1,20 @@
+import logging
+
 from aiogram import types, F, Router, html
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.state import State, StatesGroup
 
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from aiohttp import ClientSession
+
 
 router = Router()
 
 
-url_note = '/api/v1/notes/'
-url_auth = 'http:/127.0.0.1/api/v1/auth/'
+url_note = '/api/v1/notes'
+url_signup = 'http://127.0.0.1:8000/api/v1/auth/signup'
+url_login = 'http://0.0.0.0:8000/api/v1/auth/login'
 
 
 class FormData(StatesGroup):
@@ -49,4 +54,20 @@ async def process_password(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     login = data.get('login')
     password = message.text
-    await message.answer(f'Логин: {login}\nПароль: {password}')
+    first_name = message.from_user.first_name
+    last_name = message.from_user.last_name
+
+    async with ClientSession() as session:
+        async with session.post(
+                url=url_signup,
+                json={
+                    'login': login,
+                    'password': password,
+                    'first_name': first_name,
+                    'last_name': last_name
+                }) as response:
+            if response.status == 201:
+                logging.info('Пользователь зарегистрирован')
+                await message.answer(f'Вы зарегистрированы!')
+
+    # await message.answer('Можно создавать заметки!')
